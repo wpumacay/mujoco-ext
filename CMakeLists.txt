@@ -29,7 +29,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Expose some options to the user
 option(MUJOCO_EXT_PREFER_LOCAL
-       "Hints findpackage to look for MuJoCo in our system first" ON)
+       "Hints findpackage to look for MuJoCo in our system first" OFF)
 option(MUJOCO_EXT_BUILD_MUJOCO_DEMOS
        "Build the samples provided by MuJoCo itself (e.g. simulate, basic)" ON)
 option(MUJOCO_EXT_BUILD_EXAMPLES
@@ -37,15 +37,6 @@ option(MUJOCO_EXT_BUILD_EXAMPLES
 
 find_package(Mujoco REQUIRED)
 
-# ~~~
-# # Build the simulation example
-# add_executable(
-#   AppSimulate
-#   ${CMAKE_CURRENT_SOURCE_DIR}/third_party/mujoco/source/include/uitools.c
-#   ${CMAKE_CURRENT_SOURCE_DIR}/third_party/mujoco/source/sample/simulate.cc)
-# target_link_libraries(AppSimulate PRIVATE mujoco::glew mujoco::glfw
-#                                           mujoco::mujoco)
-#
-# # Build samples folder
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sample/basic)
-# ~~~
+# # Create target for the C++ MuJoCo extensions library
+# add_library(mujoco_cpp_ext_gl ${PROJECT_SOURCE_DIR}/source/common.cpp)
+# target_link_libraries(mujoco_cpp_ext_gl PUBLIC mujoco::mujoco_gl)

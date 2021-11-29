@@ -103,7 +103,6 @@ if(NOT MUJOCO_FOUND_IN_SYSTEM)
     mujocolib
     URL ${mujoco_url}
     URL_HASH SHA256=${mujoco_hash}
-    USES_TERMINAL_DOWNLOAD TRUE
     PREFIX "${CMAKE_SOURCE_DIR}/third_party/mujoco"
     DOWNLOAD_DIR "${CMAKE_SOURCE_DIR}/third_party/mujoco"
     SOURCE_DIR "${CMAKE_SOURCE_DIR}/third_party/mujoco/source"
@@ -212,7 +211,7 @@ endif()
 # ------------------------------------------------------------------------------
 
 # Create the target mujoco::mujoco_gl (version includes graphics enabled) ------
-add_library(mujoco_gl SHARED IMPORTED)
+add_library(mujoco_gl INTERFACE)
 target_link_libraries(
   mujoco_gl INTERFACE mujoco_physics_with_gl mujoco_graphics_glfw
                       mujoco_graphics_glew)
@@ -220,7 +219,7 @@ add_library(mujoco::mujoco_gl ALIAS mujoco_gl)
 # ------------------------------------------------------------------------------
 
 # Create the target mujoco::mujoco_nogl (version without graphics) -------------
-add_library(mujoco_nogl SHARED IMPORTED)
+add_library(mujoco_nogl INTERFACE)
 target_link_libraries(mujoco_nogl INTERFACE mujoco_physics_no_gl)
 add_library(mujoco::mujoco_nogl ALIAS mujoco_gl)
 # ------------------------------------------------------------------------------
@@ -233,25 +232,37 @@ message(
 )
 set(Mujoco_FOUND TRUE)
 
-# ~~~
-# get_target_property(TARGET_TYPE mujoco_gl TYPE)
-# message(STATUS "FindMujoco> foooooooooo, libtype: ${TARGET_TYPE}")
-#
-# get_target_property(MUJOCO_GL_FEATURES mujoco_gl COMPILE_FEATURES)
-# get_target_property(MUJOCO_GL_OPTIONS mujoco_gl COMPILE_OPTIONS)
-# get_target_property(MUJOCO_GL_DEFINITIONS mujoco_gl COMPILE_DEFINITIONS)
-#
-# get_target_property(MUJOCO_NOGL_FEATURES mujoco_nogl COMPILE_FEATURES)
-# get_target_property(MUJOCO_NOGL_OPTIONS mujoco_nogl COMPILE_OPTIONS)
-# get_target_property(MUJOCO_NOGL_DEFINITIONS mujoco_nogl COMPILE_DEFINITIONS)
-#
-# message(STATUS "FindMujoco> showing mujoco::mujoco_gl target properties")
-# message(STATUS "COMPILE_FEATURES: ${MUJOCO_GL_FEATURES}")
-# message(STATUS "COMPILE_OPTIONS: ${MUJOCO_GL_OPTIONS}")
-# message(STATUS "COMPILE_DEFINITIONS: ${MUJOCO_GL_DEFINITIONS}")
-#
-# message(STATUS "FindMujoco> showing mujoco::mujoco_nogl target properties")
-# message(STATUS "COMPILE_FEATURES: ${MUJOCO_NOGL_FEATURES}")
-# message(STATUS "COMPILE_OPTIONS: ${MUJOCO_NOGL_OPTIONS}")
-# message(STATUS "COMPILE_DEFINITIONS: ${MUJOCO_NOGL_DEFINITIONS}")
-# ~~~
+# Configures the build steps for the provided MuJoCo demos (from tar|zip file)
+macro(MjcConfigureDemos)
+  set(one_value_args "ROOT_LOCATION")
+  cmake_parse_arguments(MJC "" "${one_value_args}" "" ${ARGN})
+
+  add_executable(mjc_demo_testxml "${MJC_ROOT_LOCATION}/sample/testxml.cc")
+  target_link_libraries(mjc_demo_testxml PRIVATE mujoco::mujoco_nogl)
+
+  add_executable(mjc_demo_testspeed "${MJC_ROOT_LOCATION}/sample/testspeed.cc")
+  target_link_libraries(mjc_demo_testspeed PRIVATE mujoco::mujoco_nogl)
+
+  add_executable(mjc_demo_compile "${MJC_ROOT_LOCATION}/sample/compile.cc")
+  target_link_libraries(mjc_demo_compile PRIVATE mujoco::mujoco_nogl)
+
+  find_package(OpenMP)
+  if(OpenMP_CXX_FOUND)
+    add_executable(mjc_demo_derivative
+                   "${MJC_ROOT_LOCATION}/sample/derivative.cc")
+    target_link_libraries(mjc_demo_derivative PRIVATE mujoco::mujoco_nogl
+                                                      OpenMP::OpenMP_CXX)
+  endif()
+
+  add_executable(mjc_demo_basic "${MJC_ROOT_LOCATION}/sample/basic.cc")
+  target_link_libraries(mjc_demo_basic PRIVATE mujoco::mujoco_gl)
+
+  add_executable(mjc_demo_simulate "${MJC_ROOT_LOCATION}/sample/simulate.cc"
+                                   "${MJC_ROOT_LOCATION}/include/uitools.c")
+  target_link_libraries(mjc_demo_simulate PRIVATE mujoco::mujoco_gl)
+
+endmacro()
+
+if(MUJOCO_EXT_BUILD_MUJOCO_DEMOS)
+  MjcConfigureDemos(ROOT_LOCATION ${MUJOCO_ROOT_LOCATION})
+endif()
