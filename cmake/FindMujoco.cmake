@@ -260,7 +260,6 @@ macro(MjcConfigureDemos)
   add_executable(mjc_demo_simulate "${MJC_ROOT_LOCATION}/sample/simulate.cc"
                                    "${MJC_ROOT_LOCATION}/include/uitools.c")
   target_link_libraries(mjc_demo_simulate PRIVATE mujoco::mujoco_gl)
-
 endmacro()
 
 if(MUJOCO_EXT_BUILD_MUJOCO_DEMOS)
