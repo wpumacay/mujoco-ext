@@ -27,7 +27,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(Mujoco REQUIRED)
 
 # Create the target for our extensions -----------------------------------------
-add_library(mujoco_cpp_ext "${PROJECT_SOURCE_DIR}/source/mujoco_ext/common.cpp")
+add_library(
+  mujoco_cpp_ext "${PROJECT_SOURCE_DIR}/source/mujoco_ext/common.cpp"
+                 "${PROJECT_SOURCE_DIR}/source/mujoco_ext/simulation.cpp")
 target_include_directories(mujoco_cpp_ext
                            PUBLIC "${PROJECT_SOURCE_DIR}/include/")
 target_link_libraries(mujoco_cpp_ext PUBLIC mujoco::mujoco_gl)
