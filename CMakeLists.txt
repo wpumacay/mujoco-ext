@@ -25,3 +25,15 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Include MuJoCo (configures imported targets and demos)
 find_package(Mujoco REQUIRED)
+
+# Create the target for our extensions -----------------------------------------
+add_library(mujoco_cpp_ext "${PROJECT_SOURCE_DIR}/source/mujoco_ext/common.cpp")
+target_include_directories(mujoco_cpp_ext
+                           PUBLIC "${PROJECT_SOURCE_DIR}/include/")
+target_link_libraries(mujoco_cpp_ext PUBLIC mujoco::mujoco_gl)
+# ------------------------------------------------------------------------------
+
+if(MUJOCO_EXT_BUILD_EXAMPLES)
+  add_executable(basic_demo "${PROJECT_SOURCE_DIR}/examples/cpp/basic_demo.cpp")
+  target_link_libraries(basic_demo PRIVATE mujoco_cpp_ext)
+endif()
