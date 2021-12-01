@@ -11,10 +11,12 @@ auto main(int argc, const char** argv) -> int {
     const std::string filename_xml = argv[1];  // NOLINT
     std::cout << "filename: " << filename_xml << '\n';
 
-    auto simulation_data = mujoco::ext::CreateFromFilename(filename_xml);
+    auto simulation_resources = mujoco::ext::CreateFromFilename(filename_xml);
 
-    auto model = std::move(simulation_data.first);
-    auto data = std::move(simulation_data.second);
+    auto model = std::move(simulation_resources.model);
+    auto data = std::move(simulation_resources.data);
+    auto scene = std::move(simulation_resources.scene);
+    auto context = std::move(simulation_resources.context);
 
     return 0;
 }
