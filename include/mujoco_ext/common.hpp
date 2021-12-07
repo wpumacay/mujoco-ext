@@ -24,22 +24,8 @@ struct DataDeleter {
     auto operator()(mjData* data_ptr) const -> void;
 };
 
-/// Destructor functor used by unique_ptr<mjvScene>
-struct SceneDeleter {
-    /// Releases the resources for the abstract visual MuJoCo scene
-    auto operator()(mjvScene* scene_ptr) const -> void;
-};
-
-/// Destructor functor used by unique_ptr<mjrContext>
-struct ContextDeleter {
-    /// Releases the resources allocated by the OpenGL renderer from MuJoCo
-    auto operator()(mjrContext* context_ptr) const -> void;
-};
-
 using mjModel_uptr = std::unique_ptr<mjModel, ModelDeleter>;
 using mjData_uptr = std::unique_ptr<mjData, DataDeleter>;
-using mjvScene_uptr = std::unique_ptr<mjvScene, SceneDeleter>;
-using mjrContext_uptr = std::unique_ptr<mjrContext, ContextDeleter>;
 
 /// All available types of visualizers
 enum class eViewerType {
@@ -56,10 +42,6 @@ struct SimResources {
     mjModel_uptr model = nullptr;
     /// Owned mjData structure
     mjData_uptr data = nullptr;
-    /// Owned mjvScene structure (if using a viewer)
-    mjvScene_uptr scene = nullptr;
-    /// Owned mjrContext structure (if using the mujoco-renderer)
-    mjrContext_uptr context = nullptr;
 };
 
 /// Creates the required simulation resources for the given mjcf
