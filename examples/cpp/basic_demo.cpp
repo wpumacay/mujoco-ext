@@ -25,7 +25,13 @@ auto main(int argc, const char** argv) -> int {
     //      viewer->render();
     // }
 
+    // @todo(wilbert): CreateFromXmlFile should return [sim, viewer]
     auto simulation_resources = mujoco::ext::CreateFromFilename(filename_xml);
+
+    // @todo(wilbert): CreateFromXmlString should return [sim, viewer]
+
+    // @todo(wilbert): CreateFromWorld(world) returns [sim, viewer], where world
+    // is a programmatically created representation of the world (no mjcf-xml)
 
     auto model = std::move(simulation_resources.model);
     auto data = std::move(simulation_resources.data);
