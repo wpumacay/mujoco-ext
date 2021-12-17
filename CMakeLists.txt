@@ -8,6 +8,11 @@ project(
   HOMEPAGE_URL "https://github.com/wpumacay/mujoco-ext"
   LANGUAGES C CXX)
 
+# Make sure that imported-targets throw an error when not found
+if(POLICY CMP0111)
+  cmake_policy(SET CMP0111 NEW)
+endif()
+
 # Make sure we generate compile_commands.json for our IDEs|Editors to use
 message(STATUS "Generating compile commands for static analysis tools")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -25,6 +30,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Include MuJoCo (configures imported targets and demos)
 find_package(Mujoco REQUIRED)
+
+# Export compile commands (used by clangd and other static analysis tools)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Create the target for our extensions -----------------------------------------
 add_library(
