@@ -132,12 +132,20 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(mjc_libname_with_gl "libmujoco${MUJOCO_VERSION}.dylib")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
   set(mjc_libname_with_gl "mujoco${MUJOCO_VERSION}.dll")
+  set(mjc_libname_impl_with_gl "mujoco${MUJOCO_VERSION}.lib")
 endif()
+
 add_library(mujoco_physics_with_gl SHARED IMPORTED)
 set_property(
   TARGET mujoco_physics_with_gl
   PROPERTY IMPORTED_LOCATION
            "${MUJOCO_ROOT_LOCATION}/bin/${mjc_libname_with_gl}")
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+  set_property(
+    TARGET mujoco_physics_with_gl
+    PROPERTY IMPORTED_IMPLIB
+             "${MUJOCO_ROOT_LOCATION}/bin/${mjc_libname_impl_with_gl}")
+endif()
 set_property(TARGET mujoco_physics_with_gl PROPERTY IMPORTED_NO_SONAME TRUE)
 target_include_directories(mujoco_physics_with_gl
                            INTERFACE "${MUJOCO_ROOT_LOCATION}/include")
@@ -157,11 +165,18 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(mjc_libname_no_gl "libmujoco${MUJOCO_VERSION}nogl.dylib")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
   set(mjc_libname_no_gl "mujoco${MUJOCO_VERSION}nogl.dll")
+  set(mjc_libname_impl_no_gl "mujoco${MUJOCO_VERSION}nogl.lib")
 endif()
 add_library(mujoco_physics_no_gl SHARED IMPORTED)
 set_property(
   TARGET mujoco_physics_no_gl
   PROPERTY IMPORTED_LOCATION "${MUJOCO_ROOT_LOCATION}/bin/${mjc_libname_no_gl}")
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+  set_property(
+    TARGET mujoco_physics_no_gl
+    PROPERTY IMPORTED_IMPLIB
+             "${MUJOCO_ROOT_LOCATION}/bin/${mjc_libname_impl_no_gl}")
+endif()
 target_include_directories(mujoco_physics_no_gl
                            INTERFACE "${MUJOCO_ROOT_LOCATION}/include")
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -179,11 +194,19 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(mjc_glfw_libname "libglfw.3.dylib")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
   set(mjc_glfw_libname "glfw3.dll")
+  set(mjc_glfw_libname_impl "glfw3.lib")
 endif()
+
 add_library(mujoco_graphics_glfw SHARED IMPORTED)
 set_property(
   TARGET mujoco_graphics_glfw
   PROPERTY IMPORTED_LOCATION "${MUJOCO_ROOT_LOCATION}/bin/${mjc_glfw_libname}")
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+  set_property(
+    TARGET mujoco_graphics_glfw
+    PROPERTY IMPORTED_IMPLIB
+             "${MUJOCO_ROOT_LOCATION}/bin/${mjc_glfw_libname_impl}")
+endif()
 set_property(TARGET mujoco_graphics_glfw PROPERTY IMPORTED_NO_SONAME TRUE)
 target_include_directories(mujoco_graphics_glfw
                            INTERFACE "${MUJOCO_ROOT_LOCATION}/include")
