@@ -36,12 +36,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Create the target for our extensions -----------------------------------------
 add_library(
-  mujoco_cpp_ext
-  "${PROJECT_SOURCE_DIR}/source/mujoco_ext/common.cpp"
-  "${PROJECT_SOURCE_DIR}/source/mujoco_ext/simulation.cpp"
-  "${PROJECT_SOURCE_DIR}/source/mujoco_ext/viewer.cpp"
-  "${PROJECT_SOURCE_DIR}/source/mujoco_ext/viewer_impl.cpp"
-  "${PROJECT_SOURCE_DIR}/source/mujoco_ext/viewer_impl_glfw.cpp")
+  mujoco_cpp_ext "${PROJECT_SOURCE_DIR}/source/mujoco_ext/common.cpp"
+                 "${PROJECT_SOURCE_DIR}/source/mujoco_ext/simulation.cpp")
 target_include_directories(mujoco_cpp_ext
                            PUBLIC "${PROJECT_SOURCE_DIR}/include/")
 target_link_libraries(mujoco_cpp_ext PUBLIC mujoco::mujoco_gl)

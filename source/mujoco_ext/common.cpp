@@ -18,8 +18,7 @@ auto DataDeleter::operator()(mjData* data_ptr) const -> void {
     mj_deleteData(data_ptr);
 }
 
-auto CreateFromFilename(const std::string& filename_xml,
-                        eViewerType viewer_type) -> SimResources {
+auto CreateFromFilename(const std::string& filename_xml) -> SimResources {
     constexpr int ERROR_BUFFER_SIZE = 1000;
     std::array<char, ERROR_BUFFER_SIZE> error_buffer_msg{};
     mjModel* model_ptr = mj_loadXML(filename_xml.c_str(), nullptr,
@@ -35,6 +34,12 @@ auto CreateFromFilename(const std::string& filename_xml,
 
     return {std::unique_ptr<mjModel, ModelDeleter>(model_ptr),
             std::unique_ptr<mjData, DataDeleter>(data_ptr)};
+}
+
+auto CreateFromString(const std::string& string_xml) -> SimResources {
+    // @todo(wilbert): check how to use the VFS to create a file with the giben
+    // string. Based on https://github.com/deepmind/mujoco/discussions/24
+    return {nullptr, nullptr};
 }
 
 }  // namespace ext

@@ -36,18 +36,13 @@ enum class eViewerType {
     EXTERNAL_MESHCAT
 };
 
-/// Resources used by the simulation once instantiated
-struct SimResources {
-    /// Owned mjModel structure
-    mjModel_uptr model = nullptr;
-    /// Owned mjData structure
-    mjData_uptr data = nullptr;
-};
+using SimResources = std::pair<mjModel_uptr, mjData_uptr>;
 
 /// Creates the required simulation resources for the given mjcf
-auto CreateFromFilename(const std::string& filename_xml,
-                        eViewerType viewer_type = eViewerType::NONE)
-    -> SimResources;
+auto CreateFromFilename(const std::string& filename_xml) -> SimResources;
+
+/// Creates the required simulation resources from a given mjcf string
+auto CreateFromString(const std::string& string_xml) -> SimResources;
 
 }  // namespace ext
 }  // namespace mujoco
