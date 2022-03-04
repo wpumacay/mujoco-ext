@@ -1,11 +1,12 @@
 #pragma once
 
+// clang-format off
 #include <glfw3.h>
 
-#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <mujoco_ext/viewer_impl.hpp>
+// clang-format on
 
 namespace mujoco {
 namespace ext {
@@ -14,33 +15,41 @@ namespace ext {
 struct GLFWwindowDeleter {
     /// Releases the context and window created by GLFW
     auto operator()(GLFWwindow* window_ptr) const -> void {
-        assert(window_ptr != nullptr);  // NOLINT
-        glfwDestroyWindow(window_ptr);
+        if (window_ptr != nullptr) {
+            glfwDestroyWindow(window_ptr);
+        }
     }
 };
 
 class ViewerImplGLFW : public IViewerImpl {
  public:
+    /// Unique pointer alias for this type
     using uptr = std::unique_ptr<ViewerImplGLFW>;
+    /// Unique pointer alias for the GLFWwindow struct
     using GLFWwindow_uptr = std::unique_ptr<GLFWwindow, GLFWwindowDeleter>;
 
-    static auto Create(int32_t width, int32_t height) -> ViewerImplGLFW::uptr;
+    /// Creates a GLFW-based viewer of the given width and height
+    explicit ViewerImplGLFW(mjModel* model, mjData* data, int32_t width,
+                            int32_t height);
 
-    ViewerImplGLFW(const ViewerImplGLFW& rhs) = delete;
+    /// Use only explicit constructor (no copy from others)
+    ViewerImplGLFW(const ViewerImplGLFW& other) = delete;
 
-    ViewerImplGLFW(ViewerImplGLFW&& rhs) = delete;
+    /// Use only explicit constructor (no move from others)
+    ViewerImplGLFW(ViewerImplGLFW&& other) = delete;
 
-    auto operator=(const ViewerImplGLFW& rhs) -> ViewerImplGLFW& = delete;
+    /// Don't allow to copy this type
+    auto operator=(const ViewerImplGLFW& other) -> ViewerImplGLFW& = delete;
 
-    auto operator=(ViewerImplGLFW&& rhs) -> ViewerImplGLFW& = delete;
+    /// Don't allow to move this type
+    auto operator=(ViewerImplGLFW&& other) -> ViewerImplGLFW& = delete;
 
+    /// Release both mjv (mujoco) and glfw resources
     ~ViewerImplGLFW() override;
 
  protected:
+    /// Renders the current scene using the internal MuJoCo GL-based renderer
     auto _renderImpl() -> void override;
-
- private:
-    ViewerImplGLFW(int32_t width, int32_t height);
 
  private:
     mjvOption m_Options{};
@@ -52,10 +61,6 @@ class ViewerImplGLFW : public IViewerImpl {
     mjrContext m_Context{};
 
     GLFWwindow_uptr m_GLFWwindow = nullptr;
-
-    mjModel* m_ModelRef = nullptr;
-
-    mjData* m_DataRef = nullptr;
 };
 
 }  // namespace ext

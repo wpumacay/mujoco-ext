@@ -1,10 +1,13 @@
 #pragma once
 
+// clang-format off
 #include <cstdint>
 #include <memory>
-#include <mujoco_ext/common.hpp>
 #include <string>
 #include <utility>
+
+#include <mujoco_ext/common.hpp>
+// clang-format on
 
 namespace mujoco {
 namespace ext {

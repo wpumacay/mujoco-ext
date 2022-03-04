@@ -2,26 +2,21 @@
 #include <mjrender.h>
 #include <mujoco.h>
 
+#include <cassert>
 #include <cstddef>
 #include <mujoco_ext/viewer_impl_glfw.hpp>
-
-#include "mujoco_ext/common.hpp"
 
 namespace mujoco {
 namespace ext {
 
-auto ViewerImplGLFW::Create(int32_t width, int32_t height)
-    -> ViewerImplGLFW::uptr {
-    return std::unique_ptr<ViewerImplGLFW>(new ViewerImplGLFW(width, height));
-}
-
-ViewerImplGLFW::ViewerImplGLFW(int32_t width, int32_t height) {
-    // NOLINTNEXTLINE
-    if (!glfwInit()) {
+ViewerImplGLFW::ViewerImplGLFW(mjModel* model, mjData* data, int32_t width,
+                               int32_t height)
+    : IViewerImpl(model, data, width, height) {
+    if (glfwInit() != GLFW_TRUE) {
         return;  // @todo(wilbert): call some logging functions here
     }
 
-    auto *window_ptr = glfwCreateWindow(
+    auto* window_ptr = glfwCreateWindow(
         width, height, "MuJoCo Renderer (GLFW backend)", nullptr, nullptr);
     if (window_ptr == nullptr) {
         glfwTerminate();
@@ -36,8 +31,8 @@ ViewerImplGLFW::ViewerImplGLFW(int32_t width, int32_t height) {
     mjv_defaultScene(&m_Scene);
     mjr_defaultContext(&m_Context);
 
-    mjv_makeScene(m_ModelRef, &m_Scene, NUM_MAX_GEOMETRIES);
-    mjr_makeContext(m_ModelRef, &m_Context, mjFONTSCALE_150);
+    mjv_makeScene(mjc_model_cptr(), &m_Scene, NUM_MAX_GEOMETRIES);
+    mjr_makeContext(mjc_model_cptr(), &m_Context, mjFONTSCALE_150);
 
     m_GLFWwindow = std::unique_ptr<GLFWwindow, GLFWwindowDeleter>(window_ptr);
 }
@@ -50,16 +45,16 @@ ViewerImplGLFW::~ViewerImplGLFW() {
 }
 
 auto ViewerImplGLFW::_renderImpl() -> void {
-    assert(m_GLFWwindow != nullptr);  // NOLINT
-    assert(m_ModelRef != nullptr);    // NOLINT
-    assert(m_DataRef != nullptr);     // NOLINT
+    assert(m_GLFWwindow != nullptr);      // NOLINT
+    assert(mjc_model_cptr() != nullptr);  // NOLINT
+    assert(mjc_data_ptr() != nullptr);    // NOLINT
 
     mjrRect viewport_rect = {0, 0, 0, 0};
     glfwGetFramebufferSize(m_GLFWwindow.get(), &viewport_rect.width,
                            &viewport_rect.height);
 
-    mjv_updateScene(m_ModelRef, m_DataRef, &m_Options, nullptr, &m_Camera,
-                    mjCAT_ALL, &m_Scene);
+    mjv_updateScene(mjc_model_cptr(), mjc_data_ptr(), &m_Options, nullptr,
+                    &m_Camera, mjCAT_ALL, &m_Scene);
     mjr_render(viewport_rect, &m_Scene, &m_Context);
 
     glfwSwapBuffers(m_GLFWwindow.get());
