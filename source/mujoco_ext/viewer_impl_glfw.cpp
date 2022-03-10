@@ -44,21 +44,25 @@ ViewerImplGLFW::~ViewerImplGLFW() {
     m_GLFWwindow = nullptr;
 }
 
-auto ViewerImplGLFW::_renderImpl() -> void {
+auto ViewerImplGLFW::_prepareImpl() -> void {
     assert(m_GLFWwindow != nullptr);      // NOLINT
     assert(mjc_model_cptr() != nullptr);  // NOLINT
     assert(mjc_data_ptr() != nullptr);    // NOLINT
 
-    mjrRect viewport_rect = {0, 0, 0, 0};
-    glfwGetFramebufferSize(m_GLFWwindow.get(), &viewport_rect.width,
-                           &viewport_rect.height);
+    m_ViewportRect = {0, 0, 0, 0};
+    glfwGetFramebufferSize(m_GLFWwindow.get(), &m_ViewportRect.width,
+                           &m_ViewportRect.height);
 
     mjv_updateScene(mjc_model_cptr(), mjc_data_ptr(), &m_Options, nullptr,
                     &m_Camera, mjCAT_ALL, &m_Scene);
-    mjr_render(viewport_rect, &m_Scene, &m_Context);
+
+    glfwPollEvents();
+}
+
+auto ViewerImplGLFW::_renderImpl() -> void {
+    mjr_render(m_ViewportRect, &m_Scene, &m_Context);
 
     glfwSwapBuffers(m_GLFWwindow.get());
-    glfwPollEvents();
 }
 
 }  // namespace ext

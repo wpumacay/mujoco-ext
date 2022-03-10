@@ -25,6 +25,9 @@ class Viewer {
                        int32_t height = DEFAULT_VIEWPORT_HEIGHT)
         -> Viewer::uptr;
 
+    /// Prepares|Syncs the simulation and the viewer internal states
+    auto prepare() -> void;
+
     /// Renders the current state of the simulation
     auto render() -> void;
 

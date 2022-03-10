@@ -3,6 +3,8 @@
 namespace mujoco {
 namespace ext {
 
+auto IViewerImpl::prepare() -> void { _prepareImpl(); }
+
 auto IViewerImpl::render() -> void { _renderImpl(); }
 
 }  // namespace ext

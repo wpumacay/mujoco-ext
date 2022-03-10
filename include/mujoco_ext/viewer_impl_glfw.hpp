@@ -48,6 +48,9 @@ class ViewerImplGLFW : public IViewerImpl {
     ~ViewerImplGLFW() override;
 
  protected:
+    /// Updates the internal MuJoCo scene (sync with simulation)
+    auto _prepareImpl() -> void override;
+
     /// Renders the current scene using the internal MuJoCo GL-based renderer
     auto _renderImpl() -> void override;
 
@@ -59,6 +62,8 @@ class ViewerImplGLFW : public IViewerImpl {
     mjvScene m_Scene{};
 
     mjrContext m_Context{};
+
+    mjrRect m_ViewportRect = {0, 0, 0, 0};
 
     GLFWwindow_uptr m_GLFWwindow = nullptr;
 };

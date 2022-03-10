@@ -50,4 +50,7 @@ target_link_libraries(mujoco_cpp_ext PUBLIC mujoco::mujoco_gl)
 if(MUJOCO_EXT_BUILD_EXAMPLES)
   add_executable(basic_demo "${PROJECT_SOURCE_DIR}/examples/cpp/basic_demo.cpp")
   target_link_libraries(basic_demo PRIVATE mujoco_cpp_ext)
+
+  add_executable(basic_sync "${PROJECT_SOURCE_DIR}/examples/cpp/basic_sync.cpp")
+  target_link_libraries(basic_sync PRIVATE mujoco_cpp_ext)
 endif()

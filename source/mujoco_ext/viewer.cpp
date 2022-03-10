@@ -29,6 +29,12 @@ Viewer::Viewer(eViewerType type, mjModel* model, mjData* data, int32_t width,
     }
 }
 
+auto Viewer::prepare() -> void {
+    if (m_ViewerImpl) {
+        m_ViewerImpl->prepare();
+    }
+}
+
 auto Viewer::render() -> void {
     if (m_ViewerImpl) {
         m_ViewerImpl->render();

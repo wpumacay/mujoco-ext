@@ -28,6 +28,7 @@ auto main(int argc, const char **argv) -> int {
 
     while (sim->num_total_steps() < MAX_STEPS) {
         sim->step(STEP_SIZE);
+        viz->prepare();
         viz->render();
         std::cout << "sim-time=" << sim->simulation_time()
                   << ", sim-steps=" << sim->num_simulation_steps()

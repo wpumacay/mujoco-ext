@@ -36,6 +36,9 @@ class IViewerImpl {
     /// Delegate the resources release to each class implementation
     virtual ~IViewerImpl() = default;
 
+    /// Prepares the scene and syncs with simulation for later rendering
+    auto prepare() -> void;
+
     /// Renders the current scene appropriately
     auto render() -> void;
 
@@ -44,6 +47,9 @@ class IViewerImpl {
     explicit IViewerImpl(mjModel* model, mjData* data, int32_t width,
                          int32_t height)
         : m_Model(model), m_Data(data) {}
+
+    /// Requests to prepare the scene and sync with the internal sim state
+    virtual auto _prepareImpl() -> void = 0;
 
     /// Requests to render using the internal implementation for this backend
     virtual auto _renderImpl() -> void = 0;
