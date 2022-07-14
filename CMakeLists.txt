@@ -10,5 +10,11 @@ project(
 option(MUJOCOEXT_BUILD_EXAMPLES
        "Build the examples provided with this set of extensions" ON)
 
-# Add third_party dependencies
-add_subdirectory(third_party)
+# Add third_party dependencies --------
+set(MUJOCO_BUILD_TESTS FALSE)
+set(MUJOCO_BUILD_EXAMPLES FALSE)
+add_subdirectory(third_party/mujoco)
+
+# Add examples to the build workflow---
+add_subdirectory(examples)
+
