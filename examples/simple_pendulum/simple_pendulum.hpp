@@ -1,11 +1,12 @@
 #pragma once
 
-#include <mujoco/mujoco.h>
-
 #include <array>
 #include <string>
 #include <memory>
 #include <utility>
+
+#include <GLFW/glfw3.h>
+#include <mujoco/mujoco.h>
 
 struct mjModelDeleter {
     auto operator()(mjModel* ptr) const -> void;
@@ -23,6 +24,9 @@ struct mjrContextDeleter {
     auto operator()(mjrContext* ptr) const -> void;
 };
 
+struct GLFWwindowDeleter {
+    auto operator()(GLFWwindow* ptr) const -> void;
+};
 
 static constexpr int ERROR_BUFFER_SIZE = 100;
 static constexpr int NUM_MAX_GEOMETRIES = 2000;
@@ -31,6 +35,11 @@ static constexpr mjtNum SIMULATION_FPS = static_cast<mjtNum>(60.0);
 static constexpr const char* JOINT_NAME = "hinge";
 static constexpr const char* ACTUATOR_NAME = "torque";
 static constexpr const char* RESOURCES_PATH = MUJOCOEXT_RESOURCES_PATH;
+
+// GLFW related constants
+static constexpr int WINDOW_WIDTH = 1200;
+static constexpr int WINDOW_HEIGHT = 900;
+static constexpr const char* WINDOW_NAME = "Simple Pendulum Application";
 
 class SimplePendulum {
 public:
@@ -75,4 +84,12 @@ private:
 
     std::unique_ptr<mjModel, mjModelDeleter> m_MjcModel = nullptr;
     std::unique_ptr<mjData, mjDataDeleter> m_MjcData = nullptr;
+
+    std::unique_ptr<GLFWwindow, GLFWwindowDeleter> m_Window = nullptr;
+
+#ifdef MUJOCOEXT_BUILD_HEADLESS
+    bool m_IsHeadless = true; // always will be headless
+#else
+    bool m_IsHeadless = false; // might be headless if can't initialize GLFW
+#endif
 };

@@ -9,6 +9,8 @@ project(
 
 option(MUJOCOEXT_BUILD_EXAMPLES
        "Build the examples provided with this set of extensions" ON)
+option(MUJOCOEXT_BUILD_HEADLESS
+       "Build without glfw (running on headless mode)" OFF)
 
 # Add third_party dependencies --------
 set(MUJOCO_BUILD_TESTS FALSE)
