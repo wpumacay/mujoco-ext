@@ -53,6 +53,13 @@ SimplePendulum::SimplePendulum() {
     }
     auto* mjc_data = mj_makeData(mjc_model);
 
+    // Grab some information required for the interface to the simple pendulum
+    m_JointHingeId = mj_name2id(mjc_model, mjOBJ_JOINT, JOINT_NAME);
+    m_ActuatorHingeId = mj_name2id(mjc_model, mjOBJ_ACTUATOR, ACTUATOR_NAME);
+
+    std::cout << "hinge-joint-id: " << m_JointHingeId << std::endl;
+    std::cout << "hinge-actuator-id: " << m_ActuatorHingeId << std::endl;
+
     m_MjcModel = std::unique_ptr<mjModel, mjModelDeleter>(mjc_model);
     m_MjcData = std::unique_ptr<mjData, mjDataDeleter>(mjc_data);
     m_MjcScene = std::unique_ptr<mjvScene, mjvSceneDeleter>(new mjvScene());
@@ -185,7 +192,7 @@ auto SimplePendulum::Step() -> void {
     while (m_MjcData->time - simstart < 1.0 / SIMULATION_FPS) {
         // @todo(wilbert): grab controls and set actuator on each internal step
         // ...
-
+        m_MjcData->ctrl[m_ActuatorHingeId] = 0.1;
         // Step the simulation by the physics-step (0.02 default in mjcf-xml)
         mj_step(m_MjcModel.get(), m_MjcData.get());
     }
@@ -216,8 +223,7 @@ auto SimplePendulum::Reset() -> void {
 }
 
 auto SimplePendulum::GetTheta() const -> double {
-    // @todo(wilbert): implement getting the angle from qpos and the joint id
-    return 0.0;
+    return m_MjcData->qpos[m_JointHingeId];
 }
 
 auto SimplePendulum::IsActive() const -> bool {
@@ -233,6 +239,7 @@ auto main() -> int {
 
     while (sim.IsActive()) {
         sim.Step();
+        std::cout << "theta: " << sim.GetTheta() << std::endl;
     }
     return 0;
 }

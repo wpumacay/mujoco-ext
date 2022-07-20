@@ -90,6 +90,9 @@ class SimplePendulum {
     mjvCamera m_MjcCamera{};
     mjvOption m_MjcOption{};
 
+    int m_JointHingeId{-1};
+    int m_ActuatorHingeId{-1};
+
     std::array<char, ERROR_BUFFER_SIZE> m_MjcErrorBuffer{};
 
     std::string m_MjcFilepath;
