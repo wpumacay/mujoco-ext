@@ -9,8 +9,11 @@ project(
 
 option(MUJOCOEXT_BUILD_EXAMPLES
        "Build the examples provided with this set of extensions" ON)
-option(MUJOCOEXT_BUILD_HEADLESS
-       "Build without glfw (running on headless mode)" OFF)
+option(MUJOCOEXT_BUILD_HEADLESS "Build without glfw (running on headless mode)"
+       OFF)
+
+# Export compile_commands.json (required for linting)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Add third_party dependencies --------
 set(MUJOCO_BUILD_TESTS FALSE)
@@ -19,4 +22,3 @@ add_subdirectory(third_party/mujoco)
 
 # Add examples to the build workflow---
 add_subdirectory(examples)
-

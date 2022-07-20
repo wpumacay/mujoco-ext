@@ -1,12 +1,12 @@
 #pragma once
 
-#include <array>
-#include <string>
-#include <memory>
-#include <utility>
-
 #include <GLFW/glfw3.h>
 #include <mujoco/mujoco.h>
+
+#include <array>
+#include <memory>
+#include <string>
+#include <utility>
 
 struct mjModelDeleter {
     auto operator()(mjModel* ptr) const -> void;
@@ -41,9 +41,16 @@ static constexpr int WINDOW_WIDTH = 1200;
 static constexpr int WINDOW_HEIGHT = 900;
 static constexpr const char* WINDOW_NAME = "Simple Pendulum Application";
 
-class SimplePendulum {
-public:
+struct MouseState {
+    bool button_left = false;
+    bool button_middle = false;
+    bool button_right = false;
+    double last_x = 0;
+    double last_y = 0;
+};
 
+class SimplePendulum {
+ public:
     SimplePendulum();
 
     /// Advances the simulation by a single step
@@ -58,24 +65,32 @@ public:
     /// Returns the current angle of the pendulum
     auto GetTheta() const -> double;
 
+    /// Returns whether the application is still active or should close
+    auto IsActive() const -> bool;
+
+    /// Returns the current state of the mouse
+    auto GetMouseState() -> MouseState& { return m_MouseState; }
+
+    /// Returns the current state of the mouse (read-only)
+    auto GetMouseState() const -> const MouseState& { return m_MouseState; }
+
     /// Returns a mutable reference to the mjModel of this simulation
-    auto model() -> mjModel& { return *m_MjcModel.get(); }
-    
+    auto model() -> mjModel& { return *m_MjcModel; }
+
     /// Returns an unmutable reference to the mjModel of this simulation
-    auto model() const -> const mjModel& { return *m_MjcModel.get(); }
-    
+    auto model() const -> const mjModel& { return *m_MjcModel; }
+
     /// Returns a mutable reference to the mjData of this simulation
-    auto data() -> mjData& { return *m_MjcData.get(); }
-    
+    auto data() -> mjData& { return *m_MjcData; }
+
     /// Returns an unmutable reference to the mjData of this simulation
-    auto data() const -> const mjData& { return *m_MjcData.get(); }
+    auto data() const -> const mjData& { return *m_MjcData; }
 
-private:
+ private:
+    mjvCamera m_MjcCamera{};
+    mjvOption m_MjcOption{};
 
-    mjvCamera m_MjcCamera;
-    mjvOption m_MjcOption;
-
-    std::array<char, ERROR_BUFFER_SIZE> m_MjcErrorBuffer;
+    std::array<char, ERROR_BUFFER_SIZE> m_MjcErrorBuffer{};
 
     std::string m_MjcFilepath;
 
@@ -85,11 +100,15 @@ private:
     std::unique_ptr<mjModel, mjModelDeleter> m_MjcModel = nullptr;
     std::unique_ptr<mjData, mjDataDeleter> m_MjcData = nullptr;
 
-    std::unique_ptr<GLFWwindow, GLFWwindowDeleter> m_Window = nullptr;
+    MouseState m_MouseState{};
 
 #ifdef MUJOCOEXT_BUILD_HEADLESS
-    bool m_IsHeadless = true; // always will be headless
+    /// Whether or not we're running in headless mode
+    bool m_IsHeadless = true;  // always will be headless
 #else
-    bool m_IsHeadless = false; // might be headless if can't initialize GLFW
+    /// GLFW window created for the visualizer
+    std::unique_ptr<GLFWwindow, GLFWwindowDeleter> m_Window = nullptr;
+    /// Whether or not we're running in headless mode
+    bool m_IsHeadless = false;  // might be headless if can't initialize GLFW
 #endif
 };
