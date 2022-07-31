@@ -1,4 +1,4 @@
-#include <interface/application.hpp>
+#include <core/application.hpp>
 #include <iostream>
 
 auto MjcModelDeleter::operator()(mjModel* ptr) const -> void {

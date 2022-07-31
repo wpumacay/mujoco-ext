@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interface/application.hpp>
+#include <core/application.hpp>
 
 static constexpr const char* JOINT_1_NAME = "hinge_1";
 static constexpr const char* JOINT_2_NAME = "hinge_2";

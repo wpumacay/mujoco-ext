@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interface/application.hpp>
+#include <core/application.hpp>
 
 static constexpr const char* JOINT_NAME = "hinge";
 static constexpr const char* ACTUATOR_NAME = "torque";
