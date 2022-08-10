@@ -17,7 +17,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Add third_party dependencies --------
 set(MUJOCO_BUILD_TESTS FALSE)
-set(MUJOCO_BUILD_EXAMPLES FALSE)
+set(MUJOCO_BUILD_EXAMPLES TRUE)
 add_subdirectory(third_party/mujoco)
 
 # -------------------------------------

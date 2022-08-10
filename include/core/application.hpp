@@ -72,6 +72,18 @@ class Application {
     /// Destroys the resources allocated by this application
     virtual ~Application() = default;
 
+    /// Not copy constructable
+    Application(const Application& rhs) = delete;
+
+    /// Not move constructable
+    Application(Application&& rhs) = delete;
+
+    /// No copy operations allowed
+    auto operator=(const Application& rhs) -> Application& = delete;
+
+    /// No move operations allowed
+    auto operator=(Application&& rhs) -> Application& = delete;
+
     /// Advances the simulation by a single step
     auto Step() -> void;
 
