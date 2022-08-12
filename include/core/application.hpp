@@ -74,6 +74,8 @@ struct ApplicationState {
     bool running = true;
     /// Whether or not a reset has been requested
     bool dirty_reset = false;
+    /// Whether or not a reload has been requested
+    bool dirty_reload = false;
     /// Whether the ui-framework ants to capture the mouse input
     bool wants_to_capture_mouse = false;
 };
@@ -109,6 +111,9 @@ class Application {
 
     /// Resets the current simulation to its initial configuration
     auto Reset() -> void;
+
+    /// Loads the model and creates simulation resources
+    auto LoadModel() -> void;
 
     /// Returns whether the application is still active or should close
     auto IsActive() const -> bool;
@@ -167,6 +172,9 @@ class Application {
 
     /// Implementation-specific simulation step
     virtual auto _SimStepInternal() -> void{};
+
+    /// Implementation-specific reload step
+    virtual auto _ReloadInternal() -> void{/* implement your own reload */};
 
     /// Implementation-specific rendering step
     virtual auto _RenderInternal() -> void{};

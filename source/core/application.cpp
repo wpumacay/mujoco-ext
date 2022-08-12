@@ -45,27 +45,7 @@ auto GLFWwindowDeleter::operator()(GLFWwindow* ptr) const -> void {
 Application::Application(const char* app_name, const char* app_model)
     : m_Appname(app_name), m_Appmodel(app_model) {
     m_Modelpath = std::string(RESOURCES_PATH) + app_model;
-    auto* mjc_model =
-        mj_loadXML(m_Modelpath.c_str(), nullptr, m_ErrorBuffer.data(),
-                   static_cast<int>(m_ErrorBuffer.size()));
-
-    if (mjc_model == nullptr) {
-        std::cout << "Application >> there was an error loading model ["
-                  << m_Modelpath << "]" << std::endl;
-        mju_error_s("Error: %s", m_ErrorBuffer.data());
-        return;
-    }
-
-    auto* mjc_data = mj_makeData(mjc_model);
-
-    m_Model = std::unique_ptr<mjModel, MjcModelDeleter>(mjc_model);
-    m_Data = std::unique_ptr<mjData, MjcDataDeleter>(mjc_data);
-    m_Scene = std::unique_ptr<mjvScene, MjvSceneDeleter>(new mjvScene());
-
-    mjv_defaultCamera(&m_Camera);
-    mjv_defaultOption(&m_Option);
-    mjv_defaultScene(m_Scene.get());
-    mjv_makeScene(mjc_model, m_Scene.get(), NUM_MAX_GEOMETRIES);
+    LoadModel();
 
 #ifndef MUJOCOEXT_BUILD_HEADLESS
     if (glfwInit() == GLFW_FALSE) {
@@ -90,7 +70,7 @@ Application::Application(const char* app_name, const char* app_model)
     m_Context =
         std::unique_ptr<mjrContext, MjrContextDeleter>(new mjrContext());
     mjr_defaultContext(m_Context.get());
-    mjr_makeContext(mjc_model, m_Context.get(), mjFONTSCALE_150);
+    mjr_makeContext(m_Model.get(), m_Context.get(), mjFONTSCALE_150);
 
     glfwSetWindowUserPointer(glfw_window, this);
 
@@ -229,6 +209,13 @@ auto Application::Step() -> void {
         return;
     }
 
+    if (m_ApplicationState.dirty_reload) {
+        m_ApplicationState.dirty_reload = false;
+        LoadModel();
+        Reset();
+        return;
+    }
+
     mjtNum sim_start = m_Data->time;
     while (m_Data->time - sim_start < 1.0 / SIMULATION_FPS) {
         // Apply controller and set control commands
@@ -284,6 +271,39 @@ auto Application::Render() -> void {
 #endif
 }
 
+auto Application::LoadModel() -> void {
+    // Clear the previous simulation structures
+    m_Model = nullptr;
+    m_Data = nullptr;
+    m_Scene = nullptr;
+
+    // Load model and create simulation structures
+    auto* mjc_model =
+        mj_loadXML(m_Modelpath.c_str(), nullptr, m_ErrorBuffer.data(),
+                   static_cast<int>(m_ErrorBuffer.size()));
+
+    if (mjc_model == nullptr) {
+        std::cout << "Application >> there was an error loading model ["
+                  << m_Modelpath << "]" << std::endl;
+        mju_error_s("Error: %s", m_ErrorBuffer.data());
+        return;
+    }
+
+    auto* mjc_data = mj_makeData(mjc_model);
+
+    m_Model = std::unique_ptr<mjModel, MjcModelDeleter>(mjc_model);
+    m_Data = std::unique_ptr<mjData, MjcDataDeleter>(mjc_data);
+    m_Scene = std::unique_ptr<mjvScene, MjvSceneDeleter>(new mjvScene());
+
+    mjv_defaultCamera(&m_Camera);
+    mjv_defaultOption(&m_Option);
+    mjv_defaultScene(m_Scene.get());
+    mjv_makeScene(mjc_model, m_Scene.get(), NUM_MAX_GEOMETRIES);
+
+    // Call user-defined reload logic
+    _ReloadInternal();
+}
+
 auto Application::_RenderUiCore() -> void {
     auto& app_state = m_ApplicationState;
     // --------------------------------
@@ -293,6 +313,9 @@ auto Application::_RenderUiCore() -> void {
         ImGui::Checkbox("Running", &app_state.running);
         if (ImGui::Button("Reset")) {
             app_state.dirty_reset = true;
+        }
+        if (ImGui::Button("Reload")) {
+            app_state.dirty_reload = true;
         }
     }
     if (ImGui::CollapsingHeader("Rendering")) {

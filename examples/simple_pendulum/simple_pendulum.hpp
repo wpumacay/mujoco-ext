@@ -32,6 +32,8 @@ class SimplePendulum : public Application {
 
     auto _SimStepInternal() -> void override;
 
+    auto _ReloadInternal() -> void override;
+
  private:
     int m_JointHingeId{-1};
     int m_ActuatorHingeId{-1};

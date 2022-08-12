@@ -77,6 +77,18 @@ auto SimplePendulum::_SimStepInternal() -> void {
     m_SensorJntVel.value = data().sensordata[m_SensorJntVel.adr];  // NOLINT
 }
 
+auto SimplePendulum::_ReloadInternal() -> void {
+    // Reload simulation settings (we're assumming no adds nor deletes occurred
+    // in the xml mujoco file; otherwise the addr and ids might have changed)
+    s_settings.ctrl_range_min =
+        model().actuator_ctrlrange[2 * m_ActuatorHingeId + 0];  // NOLINT
+    s_settings.ctrl_range_max =
+        model().actuator_ctrlrange[2 * m_ActuatorHingeId + 1];  // NOLINT
+    s_settings.ctrl_limited =
+        model().actuator_ctrllimited[m_ActuatorHingeId] == 1;  // NOLINT
+    s_settings.damping = model().dof_damping[m_DofAdr];        // NOLINT
+}
+
 auto SimplePendulum::GetTheta() const -> double {
     return data().qpos[m_JointHingeId];  // NOLINT
 }
