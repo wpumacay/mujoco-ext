@@ -1,6 +1,8 @@
 #include <core/application.hpp>
 #include <iostream>
 
+#include "GLFW/glfw3.h"
+
 // clang-format off
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -217,6 +219,16 @@ auto Application::Initialize() -> void {
 }
 
 auto Application::Step() -> void {
+    if (!m_ApplicationState.running) {
+        return;
+    }
+
+    if (m_ApplicationState.dirty_reset) {
+        m_ApplicationState.dirty_reset = false;
+        Reset();
+        return;
+    }
+
     mjtNum sim_start = m_Data->time;
     while (m_Data->time - sim_start < 1.0 / SIMULATION_FPS) {
         // Apply controller and set control commands
@@ -273,14 +285,30 @@ auto Application::Render() -> void {
 }
 
 auto Application::_RenderUiCore() -> void {
+    auto& app_state = m_ApplicationState;
     // --------------------------------
     // Show the core state of the application
-    ImGui::Begin("Hello World!");
+    ImGui::Begin("Application");
+    if (ImGui::CollapsingHeader("Simulation")) {
+        ImGui::Checkbox("Running", &app_state.running);
+        if (ImGui::Button("Reset")) {
+            app_state.dirty_reset = true;
+        }
+    }
+    if (ImGui::CollapsingHeader("Rendering")) {
+        // Check vsync property
+        bool old_vsync = app_state.vsync;
+        ImGui::Checkbox("Vsync", &app_state.vsync);
+        if (old_vsync != app_state.vsync) {
+            glfwSwapInterval(app_state.vsync ? GLFW_TRUE : GLFW_FALSE);
+        }
+    }
     ImGui::End();
 }
 
 auto Application::Reset() -> void {
-    // @todo(wilbert): Implement resetting mjData fields to initial config.
+    mj_resetData(m_Model.get(), m_Data.get());
+    mj_forward(m_Model.get(), m_Data.get());
 }
 
 auto Application::IsActive() const -> bool {

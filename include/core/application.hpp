@@ -72,8 +72,6 @@ struct ApplicationState {
     bool vsync = true;
     /// Whether or not the application is running
     bool running = true;
-    /// Camera used to render the view
-    int camera_index = 0;
     /// Whether or not a reset has been requested
     bool dirty_reset = false;
     /// Whether the ui-framework ants to capture the mouse input
@@ -196,6 +194,8 @@ class Application {
     std::unique_ptr<mjData, MjcDataDeleter> m_Data = nullptr;
     /// Scene struct containing visualization information
     std::unique_ptr<mjvScene, MjvSceneDeleter> m_Scene = nullptr;
+    /// Current state of the application
+    ApplicationState m_ApplicationState{};
 #ifndef MUJOCOEXT_BUILD_HEADLESS
     /// Context struct containing rendering information
     std::unique_ptr<mjrContext, MjrContextDeleter> m_Context = nullptr;
@@ -203,8 +203,6 @@ class Application {
     std::unique_ptr<GLFWwindow, GLFWwindowDeleter> m_Window = nullptr;
     /// Current state of the cursor
     MouseState m_MouseState{};
-    /// Current state of the application
-    ApplicationState m_ApplicationState{};
     /// Whether or not we're running in headless mode
     bool m_IsHeadless = false;  // might be headless if can't initialize GLFW
 #else
