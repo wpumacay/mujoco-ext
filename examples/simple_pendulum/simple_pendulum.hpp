@@ -2,6 +2,7 @@
 
 #include <core/application.hpp>
 
+static constexpr const char* BODY_NAME = "pole";
 static constexpr const char* JOINT_NAME = "hinge";
 static constexpr const char* ACTUATOR_NAME = "torque";
 
@@ -35,6 +36,7 @@ class SimplePendulum : public Application {
     auto _ReloadInternal() -> void override;
 
  private:
+    int m_BodyPoleId{-1};
     int m_JointHingeId{-1};
     int m_ActuatorHingeId{-1};
     int m_JntAdr{-1};

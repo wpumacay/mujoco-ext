@@ -10,12 +10,18 @@ struct PendulumSettings {
     float ctrl_range_min = -1.0;
     float ctrl_range_max = 1.0;
     float damping = 0.1;  // NOLINT
+    float mass = 1.0;     // NOLINT
+    float ixx = 1.0;      // NOLINT
+    float iyy = 1.0;      // NOLINT
+    float izz = 1.0;      // NOLINT
 };
 
 static PendulumSettings s_settings;  // NOLINT
 
 SimplePendulum::SimplePendulum()
     : Application("Simple Pendulum", "simple_pendulum.xml") {
+    // NOLINTNEXTLINE
+    m_BodyPoleId = mj_name2id(&model(), mjOBJ_BODY, BODY_NAME);
     // NOLINTNEXTLINE
     m_JointHingeId = mj_name2id(&model(), mjOBJ_JOINT, JOINT_NAME);
     // NOLINTNEXTLINE
@@ -37,8 +43,12 @@ SimplePendulum::SimplePendulum()
     s_settings.ctrl_range_max =
         model().actuator_ctrlrange[2 * m_ActuatorHingeId + 1];  // NOLINT
     s_settings.ctrl_limited =
-        model().actuator_ctrllimited[m_ActuatorHingeId] == 1;  // NOLINT
-    s_settings.damping = model().dof_damping[m_DofAdr];        // NOLINT
+        model().actuator_ctrllimited[m_ActuatorHingeId] == 1;     // NOLINT
+    s_settings.damping = model().dof_damping[m_DofAdr];           // NOLINT
+    s_settings.mass = model().body_mass[m_BodyPoleId];            // NOLINT
+    s_settings.ixx = model().body_inertia[3 * m_BodyPoleId + 0];  // NOLINT
+    s_settings.iyy = model().body_inertia[3 * m_BodyPoleId + 1];  // NOLINT
+    s_settings.izz = model().body_inertia[3 * m_BodyPoleId + 2];  // NOLINT
 }
 
 auto SimplePendulum::_RenderUiInternal() -> void {
@@ -62,6 +72,11 @@ auto SimplePendulum::_RenderUiInternal() -> void {
         if (old_damping != s_settings.damping) {
             model().dof_damping[m_DofAdr] = s_settings.damping;  // NOLINT
         }
+        // Some read-only (for now) properties
+        ImGui::Text("Mass: %.5f", s_settings.mass);  // NOLINT
+        // NOLINTNEXTLINE
+        ImGui::Text("Ixx: %.5f, Iyy: %.5f, Izz: %.5f", s_settings.ixx,
+                    s_settings.iyy, s_settings.izz);
     }
     if (ImGui::CollapsingHeader("Sensors")) {
         ImGui::Text("Joint-qpos: %.3f", m_SensorJntPos.value);  // NOLINT
@@ -85,8 +100,12 @@ auto SimplePendulum::_ReloadInternal() -> void {
     s_settings.ctrl_range_max =
         model().actuator_ctrlrange[2 * m_ActuatorHingeId + 1];  // NOLINT
     s_settings.ctrl_limited =
-        model().actuator_ctrllimited[m_ActuatorHingeId] == 1;  // NOLINT
-    s_settings.damping = model().dof_damping[m_DofAdr];        // NOLINT
+        model().actuator_ctrllimited[m_ActuatorHingeId] == 1;     // NOLINT
+    s_settings.damping = model().dof_damping[m_DofAdr];           // NOLINT
+    s_settings.mass = model().body_mass[m_BodyPoleId];            // NOLINT
+    s_settings.ixx = model().body_inertia[3 * m_BodyPoleId + 0];  // NOLINT
+    s_settings.iyy = model().body_inertia[3 * m_BodyPoleId + 1];  // NOLINT
+    s_settings.izz = model().body_inertia[3 * m_BodyPoleId + 2];  // NOLINT
 }
 
 auto SimplePendulum::GetTheta() const -> double {
