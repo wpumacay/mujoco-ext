@@ -9,8 +9,8 @@ DoublePendulum::DoublePendulum()
 }
 
 auto DoublePendulum::_SimStepInternal() -> void {
-    data().ctrl[m_Actuator1HingeId] = m_Actuator1Active ? m_Torque1Ctrl : 0.0; // NOLINT
-    data().ctrl[m_Actuator2HingeId] = m_Actuator2Active ? m_Torque2Ctrl : 0.0; // NOLINT
+    data().ctrl[m_Actuator1HingeId] = m_Actuator1Active ? m_Torque1Ctrl : 0.0;
+    data().ctrl[m_Actuator2HingeId] = m_Actuator2Active ? m_Torque2Ctrl : 0.0;
 }
 
 auto DoublePendulum::GetTheta1() const -> double {
@@ -23,6 +23,7 @@ auto DoublePendulum::GetTheta2() const -> double {
 
 auto main() -> int {
     DoublePendulum sim;
+    sim.Initialize();
 
     while (sim.IsActive()) {
         sim.Step();

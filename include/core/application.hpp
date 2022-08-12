@@ -64,13 +64,29 @@ struct MouseState {
     double last_y = 0;
 };
 
+/// State representation of the application
+struct ApplicationState {
+    /// Whether or not the application should be full-screen
+    bool fullscreen = false;
+    /// Whether Vertical Sync is enabled or not
+    bool vsync = true;
+    /// Whether or not the application is running
+    bool running = true;
+    /// Camera used to render the view
+    int camera_index = 0;
+    /// Whether or not a reset has been requested
+    bool dirty_reset = false;
+    /// Whether the ui-framework ants to capture the mouse input
+    bool wants_to_capture_mouse = false;
+};
+
 class Application {
  public:
     /// Creates an application object
     explicit Application(const char* app_name, const char* app_model);
 
     /// Destroys the resources allocated by this application
-    virtual ~Application() = default;
+    virtual ~Application();
 
     /// Not copy constructable
     Application(const Application& rhs) = delete;
@@ -83,6 +99,9 @@ class Application {
 
     /// No move operations allowed
     auto operator=(Application&& rhs) -> Application& = delete;
+
+    /// Startup function to be called by the user
+    auto Initialize() -> void;
 
     /// Advances the simulation by a single step
     auto Step() -> void;
@@ -105,6 +124,16 @@ class Application {
 
     /// Returns the current state of the mouse (read-only)
     auto GetMouseState() const -> const MouseState& { return m_MouseState; }
+
+    /// Returns the current state of the application
+    auto GetApplicationState() -> ApplicationState& {
+        return m_ApplicationState;
+    }
+
+    /// Returns the current state of the application (read-only)
+    auto GetApplicationState() const -> const ApplicationState& {
+        return m_ApplicationState;
+    }
 
     /// Returns a mutable reference to the mjModel of this simulation
     auto model() -> mjModel& { return *m_Model; }
@@ -131,12 +160,23 @@ class Application {
     auto camera() const -> const mjvCamera& { return m_Camera; }
 
  protected:
+    /// Render the base UI, exposing some simulation|render options
+    auto _RenderUiCore() -> void;
+
+ protected:
+    /// Implementation specific initialization step
+    virtual auto _InitializeInternal() -> void{};
+
     /// Implementation-specific simulation step
     virtual auto _SimStepInternal() -> void{};
+
     /// Implementation-specific rendering step
     virtual auto _RenderInternal() -> void{};
 
- private:
+    /// Implementation-specific ui-rendering step
+    virtual auto _RenderUiInternal() -> void{/* implement your own UI here*/};
+
+ protected:
     /// Camera used to render the visualization
     mjvCamera m_Camera{};
     /// Options related to the visualiziation/scene
@@ -163,6 +203,8 @@ class Application {
     std::unique_ptr<GLFWwindow, GLFWwindowDeleter> m_Window = nullptr;
     /// Current state of the cursor
     MouseState m_MouseState{};
+    /// Current state of the application
+    ApplicationState m_ApplicationState{};
     /// Whether or not we're running in headless mode
     bool m_IsHeadless = false;  // might be headless if can't initialize GLFW
 #else

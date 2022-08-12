@@ -20,6 +20,7 @@ auto CartPole::GetPositionX() const -> mjtNum {
 
 auto main() -> int {
     CartPole sim;
+    sim.Initialize();
 
     while (sim.IsActive()) {
         sim.Step();

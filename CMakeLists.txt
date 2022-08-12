@@ -22,10 +22,20 @@ add_subdirectory(third_party/mujoco)
 
 # -------------------------------------
 # Create a library target for the core functionality
-add_library(MujocoExtCore
-            ${CMAKE_CURRENT_SOURCE_DIR}/source/core/application.cpp)
+add_library(
+  MujocoExtCore
+  ${CMAKE_CURRENT_SOURCE_DIR}/source/core/application.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/imgui.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/imgui_demo.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/imgui_draw.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/imgui_tables.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/imgui_widgets.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/backends/imgui_impl_glfw.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui/backends/imgui_impl_opengl3.cpp)
 target_include_directories(MujocoExtCore
                            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(MujocoExtCore
+                           PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/third_party/imgui)
 target_link_libraries(MujocoExtCore PUBLIC mujoco::mujoco)
 target_compile_definitions(
   MujocoExtCore

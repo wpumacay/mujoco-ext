@@ -19,6 +19,7 @@ auto SimplePendulum::GetTheta() const -> double {
 
 auto main() -> int {
     SimplePendulum sim;
+    sim.Initialize();
 
     while (sim.IsActive()) {
         sim.Step();

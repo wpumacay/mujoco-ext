@@ -12,7 +12,7 @@ class SimplePendulum : public Application {
     /// Returns the current angle of the pendulum
     auto GetTheta() const -> double;
 
-protected:
+ protected:
     auto _SimStepInternal() -> void override;
 
  private:

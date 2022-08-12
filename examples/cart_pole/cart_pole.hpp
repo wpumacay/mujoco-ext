@@ -19,7 +19,7 @@ class CartPole : public Application {
     /// Sets the force applied to the cart
     auto SetForceX(mjtNum force) -> void { m_CartForceX = force; }
 
-protected:
+ protected:
     auto _SimStepInternal() -> void override;
 
  private:
