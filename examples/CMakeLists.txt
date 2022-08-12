@@ -5,7 +5,8 @@ include_guard()
 set(MUJOCOEXT_EXAMPLES_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/simple_pendulum/simple_pendulum.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/double_pendulum/double_pendulum.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cart_pole/cart_pole.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/cart_pole/cart_pole.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tutorial_01/tutorial_01.cpp)
 
 foreach(example_filepath IN LISTS MUJOCOEXT_EXAMPLES_LIST)
   get_filename_component(target_name ${example_filepath} NAME_WLE)
