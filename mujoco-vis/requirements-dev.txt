@@ -1,0 +1,11 @@
+setuptools
+pytest
+pylint
+black
+cmakelang
+pre-commit
+ipython
+ipykernel
+jupyter
+mujoco
+meshcat
