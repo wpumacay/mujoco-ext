@@ -1,6 +1,7 @@
 setuptools
 pytest
 pylint
+pyright
 black
 cmakelang
 pre-commit

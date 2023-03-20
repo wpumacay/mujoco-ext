@@ -1,0 +1,29 @@
+repos:
+# Some generally used hooks for sanity-check
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+    -   id: check-added-large-files
+    -   id: check-case-conflict
+    -   id: check-merge-conflict
+    -   id: check-symlinks
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: mixed-line-ending
+        args: [--fix=lf]
+    -   id: no-commit-to-branch
+        args: [--branch, master]
+
+# Changes tabs to spaces
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.7
+    hooks:
+    -   id: remove-tabs
+
+# Applies formatting for python files
+-   repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+    -   id: black
+        language_version: python3.10
