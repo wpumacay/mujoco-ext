@@ -3,6 +3,7 @@ pytest
 pylint
 pyright
 black
+isort
 cmakelang
 pre-commit
 ipython
